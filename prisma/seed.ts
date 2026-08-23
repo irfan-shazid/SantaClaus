@@ -4,7 +4,7 @@ import { createLocalAccountIssuer } from "@better-auth/core/db";
 
 const prisma = new PrismaClient();
 
-const ADMIN_EMAIL = "admin@gmail.com";
+const ADMIN_EMAIL = "santa@gmail.com";
 const ADMIN_PASSWORD = "12345";
 
 const CATEGORIES = [
