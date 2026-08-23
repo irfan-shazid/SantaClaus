@@ -1,6 +1,11 @@
 import { PrismaClient } from "@prisma/client";
+import { hashPassword } from "better-auth/crypto";
+import { createLocalAccountIssuer } from "@better-auth/core/db";
 
 const prisma = new PrismaClient();
+
+const ADMIN_EMAIL = "admin@gmail.com";
+const ADMIN_PASSWORD = "12345";
 
 const CATEGORIES = [
   { name: "Baby Boy", slug: "baby-boy", logoUrl: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=200&h=200&fit=crop", order: 1 },
@@ -52,6 +57,29 @@ async function main() {
     categoryId: softToys.id,
   };
   await prisma.product.upsert({ where: { slug: teddyBear.slug }, update: teddyBear, create: teddyBear });
+
+  const existingAdmin = await prisma.user.findUnique({ where: { email: ADMIN_EMAIL } });
+  if (!existingAdmin) {
+    const passwordHash = await hashPassword(ADMIN_PASSWORD);
+    const admin = await prisma.user.create({
+      data: { name: "Admin", email: ADMIN_EMAIL, emailVerified: true, role: "ADMIN" },
+    });
+    await prisma.account.create({
+      data: {
+        accountId: admin.id,
+        providerId: "credential",
+        issuer: createLocalAccountIssuer("credential"),
+        userId: admin.id,
+        password: passwordHash,
+      },
+    });
+    console.log(`Admin account created: ${ADMIN_EMAIL} / ${ADMIN_PASSWORD}`);
+  } else if (existingAdmin.role !== "ADMIN") {
+    await prisma.user.update({ where: { email: ADMIN_EMAIL }, data: { role: "ADMIN" } });
+    console.log(`Promoted existing ${ADMIN_EMAIL} to ADMIN.`);
+  } else {
+    console.log(`Admin account already exists: ${ADMIN_EMAIL}`);
+  }
 
   console.log("Seed complete.");
 }

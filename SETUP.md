@@ -10,7 +10,13 @@ environment variables — copy `.env.example` to `.env` and fill these in (using
 2. In the Neon dashboard, copy the **pooled connection string** → `DATABASE_URL`
 3. Copy the **direct (unpooled) connection string** → `DIRECT_URL` (used only by `prisma migrate`)
 4. Push the schema: `npm run db:push`
-5. (Optional) Seed sample categories/products: `npm run db:seed`
+5. (Optional) Seed sample categories/products, plus a ready-to-use admin login
+   (`admin@gmail.com` / `12345` — change this password after first login in production):
+   `npm run db:seed`
+
+Note: Neon gives you two connection strings — one with `-pooler` in the hostname (use for
+`DATABASE_URL`) and a direct one without it (use for `DIRECT_URL`). Using the pooled string for
+both works for this app, but the direct one is more reliable for `prisma db push` / `migrate`.
 
 ## 2. Auth secret
 
