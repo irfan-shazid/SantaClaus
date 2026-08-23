@@ -302,20 +302,7 @@ function House({
   );
 }
 
-function TrackRing({ center, radiusX, radiusY }: { center: [number, number, number]; radiusX: number; radiusY: number }) {
-  return (
-    <mesh position={center} scale={[1, radiusY / radiusX, 1]}>
-      <torusGeometry args={[radiusX, 0.04, 6, 48]} />
-      <meshStandardMaterial color="#B08968" roughness={0.7} />
-    </mesh>
-  );
-}
-
 function Scene() {
-  const trackCenter: [number, number, number] = [0, -1.7, -0.55];
-  const radiusX = 1.15;
-  const radiusY = 0.3;
-
   return (
     <>
       <ambientLight intensity={0.9} />
@@ -330,11 +317,10 @@ function Scene() {
       <Ribbon position={[2.2, 1.6, 0.35]} color={PALETTE[0]} speed={1.5} />
       <Block position={[2.05, -0.35, 0.2]} color={PALETTE[3]} speed={1.6} />
 
-      <TrackRing center={trackCenter} radiusX={radiusX} radiusY={radiusY} />
-      <Hill position={[-0.9, -2.0, -0.9]} radius={0.38} />
-      <Hill position={[1.05, -1.6, -0.95]} radius={0.3} colorBase="#5FC97A" colorHighlight="#8FE0A0" />
-      <House position={[0.75, -1.85, -0.7]} scale={0.85} />
-      <House position={[-0.55, -1.5, -0.75]} scale={0.7} roofColor="#6FD8FF" />
+      <Hill position={[1.0, -2.05, -0.9]} radius={0.36} />
+      <Hill position={[2.0, -1.75, -0.95]} radius={0.28} colorBase="#5FC97A" colorHighlight="#8FE0A0" />
+      <House position={[1.7, -1.95, -0.65]} scale={0.8} />
+      <House position={[1.15, -1.65, -0.7]} scale={0.65} roofColor="#6FD8FF" />
     </>
   );
 }
