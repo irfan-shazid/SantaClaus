@@ -8,7 +8,7 @@ import CategoryScroller, { type CategoryCardData } from "@/components/home/Categ
 export default function Hero({ categories }: { categories: CategoryCardData[] }) {
   return (
     <section className="relative flex h-[calc(100svh-7.5rem)] max-h-[700px] min-h-[420px] flex-col md:h-auto md:max-h-none md:min-h-0">
-      <div className="relative h-[58%] shrink-0 overflow-hidden rounded-b-[2.5rem] md:h-[74vh] md:min-h-[540px] md:rounded-b-[3rem]">
+      <div className="relative h-[52%] shrink-0 overflow-hidden rounded-b-[2.5rem] md:h-[74vh] md:min-h-[540px] md:rounded-b-[3rem]">
         <Banner3D />
 
         <div className="relative z-10 flex h-full flex-col justify-end p-5 pb-6 md:justify-center md:p-16">
