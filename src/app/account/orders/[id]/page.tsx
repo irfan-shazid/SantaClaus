@@ -4,6 +4,7 @@ import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatTaka } from "@/lib/format";
 import { ZONE_LABELS, type Zone } from "@/lib/delivery";
+import { ACCOUNT_TYPE_LABELS, type AccountType } from "@/lib/payment";
 import StatusTimeline from "@/components/orders/StatusTimeline";
 
 export const dynamic = "force-dynamic";
@@ -69,6 +70,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           <Row label="Name" value={order.customerName} />
           <Row label="Phone" value={order.phone} />
           <Row label="Address" value={order.address} />
+          <Row label="Account type" value={ACCOUNT_TYPE_LABELS[order.accountType as AccountType]} />
           <Row label="bKash number" value={order.bkashNumber} />
           <Row label="Transaction ID" value={order.transactionId} />
         </dl>

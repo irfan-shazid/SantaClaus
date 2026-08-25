@@ -10,6 +10,7 @@ const createOrderSchema = z.object({
   phone: z.string().min(6).max(20),
   address: z.string().min(5).max(400),
   zone: z.enum(["INSIDE_DHAKA", "OUTSIDE_DHAKA"]),
+  accountType: z.enum(["BKASH", "NAGAD", "ROCKET"]),
   bkashNumber: z.string().min(6).max(20),
   transactionId: z.string().min(3).max(40),
   items: z
@@ -81,6 +82,7 @@ export async function POST(req: Request) {
           address: data.address,
           zone: data.zone,
           deliveryCharge,
+          accountType: data.accountType,
           bkashNumber: data.bkashNumber,
           transactionId: data.transactionId,
           subtotal,

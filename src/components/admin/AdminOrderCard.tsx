@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { formatTaka } from "@/lib/format";
 import { ZONE_LABELS, type Zone } from "@/lib/delivery";
+import { ACCOUNT_TYPE_LABELS, type AccountType } from "@/lib/payment";
 
 const NEXT_STATUS: Record<string, { key: string; label: string } | null> = {
   PENDING: { key: "CONFIRMED", label: "Mark confirmed" },
@@ -20,6 +21,7 @@ interface OrderData {
   phone: string;
   address: string;
   zone: string;
+  accountType: string;
   bkashNumber: string;
   transactionId: string;
   subtotal: number;
@@ -71,7 +73,8 @@ export default function AdminOrderCard({ order }: { order: OrderData }) {
           <p className="text-slate-500">{ZONE_LABELS[order.zone as Zone]} · {formatTaka(order.deliveryCharge)}</p>
         </div>
         <div className="space-y-1 rounded-xl bg-slate-50 p-3">
-          <p className="font-semibold text-slate-600">Payment proof (bKash)</p>
+          <p className="font-semibold text-slate-600">Payment proof</p>
+          <p className="text-slate-500">Account type: {ACCOUNT_TYPE_LABELS[order.accountType as AccountType]}</p>
           <p className="text-slate-500">Sender number: {order.bkashNumber}</p>
           <p className="text-slate-500">Transaction ID: {order.transactionId}</p>
         </div>

@@ -8,6 +8,7 @@ import { useSession } from "@/lib/auth-client";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
 import { clearCart } from "@/store/cartSlice";
 import { DELIVERY_CHARGE, ZONE_LABELS, type Zone } from "@/lib/delivery";
+import { ACCOUNT_TYPES, ACCOUNT_TYPE_LABELS, type AccountType } from "@/lib/payment";
 import { formatTaka } from "@/lib/format";
 
 export default function CheckoutPage() {
@@ -22,6 +23,7 @@ export default function CheckoutPage() {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [zone, setZone] = useState<Zone>("INSIDE_DHAKA");
+  const [accountType, setAccountType] = useState<AccountType>("BKASH");
   const [bkashNumber, setBkashNumber] = useState("");
   const [transactionId, setTransactionId] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -64,6 +66,7 @@ export default function CheckoutPage() {
           phone,
           address,
           zone,
+          accountType,
           bkashNumber,
           transactionId,
           items: items.map((i) => ({ productId: i.productId, variant: i.variant, quantity: i.quantity })),
@@ -178,6 +181,24 @@ export default function CheckoutPage() {
               onChange={(e) => setBkashNumber(e.target.value)}
               className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-fuchsia-400"
             />
+          </div>
+
+          <div>
+            <label className="mb-1 block text-xs font-bold uppercase tracking-wide text-slate-500">
+              Account type
+            </label>
+            <select
+              required
+              value={accountType}
+              onChange={(e) => setAccountType(e.target.value as AccountType)}
+              className="w-full rounded-xl border border-slate-200 px-4 py-3 text-sm outline-none focus:border-fuchsia-400"
+            >
+              {ACCOUNT_TYPES.map((type) => (
+                <option key={type} value={type}>
+                  {ACCOUNT_TYPE_LABELS[type]}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>

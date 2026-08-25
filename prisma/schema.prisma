@@ -136,6 +136,12 @@ enum AddressZone {
   OUTSIDE_DHAKA
 }
 
+enum AccountType {
+  BKASH
+  NAGAD
+  ROCKET
+}
+
 model Order {
   id             String      @id @default(cuid())
   status         OrderStatus @default(PENDING)
@@ -146,6 +152,7 @@ model Order {
   zone           AddressZone
   deliveryCharge Int
 
+  accountType    AccountType @default(BKASH)
   bkashNumber    String
   transactionId  String
 
