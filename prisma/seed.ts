@@ -7,6 +7,9 @@ const prisma = new PrismaClient();
 const ADMIN_EMAIL = "santa@gmail.com";
 const ADMIN_PASSWORD = "12345";
 
+const ADMIN2_EMAIL = "admin@gmail.com";
+const ADMIN2_PASSWORD = "12345";
+
 const CATEGORIES = [
   { name: "Baby Boy", slug: "baby-boy", logoUrl: "https://images.unsplash.com/photo-1522771930-78848d9293e8?w=200&h=200&fit=crop", order: 1 },
   { name: "Baby Girl", slug: "baby-girl", logoUrl: "https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=200&h=200&fit=crop", order: 2 },
@@ -79,6 +82,29 @@ async function main() {
     console.log(`Promoted existing ${ADMIN_EMAIL} to ADMIN.`);
   } else {
     console.log(`Admin account already exists: ${ADMIN_EMAIL}`);
+  }
+
+  const existingAdmin2 = await prisma.user.findUnique({ where: { email: ADMIN2_EMAIL } });
+  if (!existingAdmin2) {
+    const passwordHash2 = await hashPassword(ADMIN2_PASSWORD);
+    const admin2 = await prisma.user.create({
+      data: { name: "Admin", email: ADMIN2_EMAIL, emailVerified: true, role: "ADMIN" },
+    });
+    await prisma.account.create({
+      data: {
+        accountId: admin2.id,
+        providerId: "credential",
+        issuer: createLocalAccountIssuer("credential"),
+        userId: admin2.id,
+        password: passwordHash2,
+      },
+    });
+    console.log(`Admin account created: ${ADMIN2_EMAIL} / ${ADMIN2_PASSWORD}`);
+  } else if (existingAdmin2.role !== "ADMIN") {
+    await prisma.user.update({ where: { email: ADMIN2_EMAIL }, data: { role: "ADMIN" } });
+    console.log(`Promoted existing ${ADMIN2_EMAIL} to ADMIN.`);
+  } else {
+    console.log(`Admin account already exists: ${ADMIN2_EMAIL}`);
   }
 
   console.log("Seed complete.");
