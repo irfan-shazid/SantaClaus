@@ -1,18 +1,26 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { unstable_cache } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import ImageGallery from "@/components/shop/ImageGallery";
 import AddToCartPanel from "@/components/shop/AddToCartPanel";
 import type { Metadata } from "next";
 
+// Keep the page dynamic (no build-time DB dependency), but cache each product's
+// query result briefly so repeat views don't hit Postgres every time. Checkout still
+// re-validates stock server-side, so a briefly-stale stock count here can never oversell.
 export const dynamic = "force-dynamic";
 
-async function getProduct(slug: string) {
-  return prisma.product.findUnique({
-    where: { slug },
-    include: { category: true },
-  });
-}
+const getProduct = unstable_cache(
+  async (slug: string) => {
+    return prisma.product.findUnique({
+      where: { slug },
+      include: { category: true },
+    });
+  },
+  ["product-by-slug"],
+  { revalidate: 30 }
+);
 
 export async function generateMetadata({
   params,

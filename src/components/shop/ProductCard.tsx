@@ -55,9 +55,13 @@ export default function ProductCard({ product, index = 0 }: { product: ProductCa
     router.push("/checkout");
   }
 
+  // Skip the fade-in on the first row so above-the-fold content paints immediately;
+  // cards further down still get the progressive reveal as they scroll into view.
+  const aboveTheFold = index < 4;
+
   return (
     <motion.div
-      initial={{ opacity: 0, y: 16 }}
+      initial={aboveTheFold ? false : { opacity: 0, y: 16 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-40px" }}
       transition={{ duration: 0.35, delay: Math.min(index, 6) * 0.04 }}
@@ -71,6 +75,7 @@ export default function ProductCard({ product, index = 0 }: { product: ProductCa
               alt={product.name}
               fill
               sizes="(max-width: 768px) 50vw, 25vw"
+              priority={index < 2}
               className="object-cover transition duration-300 group-hover:scale-105"
             />
           )}

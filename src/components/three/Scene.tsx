@@ -327,7 +327,12 @@ function Scene() {
 
 export default function Banner3DScene() {
   return (
-    <Canvas dpr={[1, 1.3]} camera={{ position: [0, 0, 6], fov: 45 }} gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}>
+    <Canvas
+      dpr={[1, 1.3]}
+      camera={{ position: [0, 0, 6], fov: 45 }}
+      gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+      performance={{ min: 0.5 }}
+    >
       <Scene />
     </Canvas>
   );

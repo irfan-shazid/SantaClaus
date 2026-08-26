@@ -15,9 +15,19 @@
 
 body {
   background: var(--background);
-  background-image: linear-gradient(160deg, #fbe1f7 0%, #dcf0fd 45%, #fdf0c8 100%);
-  background-attachment: fixed;
   color: var(--foreground);
+  position: relative;
+}
+
+/* A fixed, composited layer behind the content reproduces the same "gradient stays put
+   while the page scrolls" look as background-attachment: fixed, without the scroll jank
+   that property causes on mobile browsers (it forces main-thread repaints on every frame). */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: linear-gradient(160deg, #fbe1f7 0%, #dcf0fd 45%, #fdf0c8 100%);
 }
 
 h1,
