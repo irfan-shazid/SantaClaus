@@ -6,7 +6,7 @@ import Image from "next/image";
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
 import { useAppDispatch, useAppSelector } from "@/store/hooks";
-import { clearCart } from "@/store/cartSlice";
+import { clearCart, removeItem } from "@/store/cartSlice";
 import { DELIVERY_CHARGE, ZONE_LABELS, type Zone } from "@/lib/delivery";
 import { ACCOUNT_TYPES, ACCOUNT_TYPE_LABELS, type AccountType } from "@/lib/payment";
 import { formatTaka } from "@/lib/format";
@@ -75,6 +75,12 @@ export default function CheckoutPage() {
       const data = await res.json();
       if (!res.ok) {
         toast.error(data.error ?? "Could not place order.");
+        if (Array.isArray(data.invalidProductIds)) {
+          for (const productId of data.invalidProductIds as string[]) {
+            const line = items.find((i) => i.productId === productId);
+            if (line) dispatch(removeItem({ productId: line.productId, variant: line.variant }));
+          }
+        }
         return;
       }
       dispatch(clearCart());
@@ -251,8 +257,12 @@ export default function CheckoutPage() {
               <span>{formatTaka(deliveryCharge)}</span>
             </div>
             <div className="flex justify-between text-base font-bold text-slate-900">
-              <span>Total</span>
+              <span>Total amount</span>
               <span>{formatTaka(total)}</span>
+            </div>
+            <div className="flex justify-between border-t border-dashed border-slate-200 pt-1.5 text-fuchsia-700">
+              <span className="font-semibold">Due on delivery</span>
+              <span className="font-bold">{formatTaka(total - deliveryCharge)}</span>
             </div>
           </div>
         </div>

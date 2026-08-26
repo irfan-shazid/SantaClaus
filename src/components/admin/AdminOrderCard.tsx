@@ -62,7 +62,12 @@ export default function AdminOrderCard({ order }: { order: OrderData }) {
             {order.user.email} · {new Date(order.createdAt).toLocaleString("en-BD", { dateStyle: "medium", timeStyle: "short" })}
           </p>
         </div>
-        <p className="text-lg font-extrabold text-fuchsia-600">{formatTaka(order.total)}</p>
+        <div className="text-right">
+          <p className="text-lg font-extrabold text-fuchsia-600">{formatTaka(order.total)}</p>
+          <p className="text-[11px] font-semibold text-slate-400">Total amount</p>
+          <p className="mt-1 text-sm font-bold text-emerald-600">{formatTaka(order.total - order.deliveryCharge)}</p>
+          <p className="text-[11px] font-semibold text-slate-400">Due on delivery</p>
+        </div>
       </div>
 
       <div className="mt-3 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">

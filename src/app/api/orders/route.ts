@@ -40,6 +40,35 @@ export async function POST(req: Request) {
   }
   const data = parsed.data;
 
+  // Validate cart contents against live product data up front, so a stale cart (e.g. a
+  // product removed since it was added) fails with a precise, actionable error instead of
+  // a generic one - and the client can drop just the bad line(s) rather than the whole cart.
+  const productIds = [...new Set(data.items.map((i) => i.productId))];
+  const liveProducts = await prisma.product.findMany({ where: { id: { in: productIds } } });
+  const liveProductMap = new Map(liveProducts.map((p) => [p.id, p]));
+
+  const invalidProductIds = data.items
+    .filter((item) => !liveProductMap.has(item.productId))
+    .map((item) => item.productId);
+  if (invalidProductIds.length > 0) {
+    return NextResponse.json(
+      {
+        error: "Some items in your cart are no longer available and were removed. Please review your cart and try again.",
+        invalidProductIds,
+      },
+      { status: 409 }
+    );
+  }
+
+  const outOfStockItem = data.items.find((item) => liveProductMap.get(item.productId)!.stock < item.quantity);
+  if (outOfStockItem) {
+    const product = liveProductMap.get(outOfStockItem.productId)!;
+    return NextResponse.json(
+      { error: `"${product.name}" only has ${product.stock} left in stock.`, invalidProductIds: [product.id] },
+      { status: 409 }
+    );
+  }
+
   try {
     const order = await prisma.$transaction(async (tx) => {
       const productIds = [...new Set(data.items.map((i) => i.productId))];

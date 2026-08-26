@@ -58,8 +58,12 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
             <span>{formatTaka(order.deliveryCharge)}</span>
           </div>
           <div className="flex justify-between text-base font-bold text-slate-900">
-            <span>Total</span>
+            <span>Total amount</span>
             <span>{formatTaka(order.total)}</span>
+          </div>
+          <div className="flex justify-between border-t border-dashed border-slate-200 pt-1.5 text-fuchsia-700">
+            <span className="font-semibold">Due on delivery</span>
+            <span className="font-bold">{formatTaka(order.total - order.deliveryCharge)}</span>
           </div>
         </div>
       </div>
