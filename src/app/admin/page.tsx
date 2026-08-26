@@ -34,7 +34,10 @@ export default async function AdminOverviewPage() {
     prisma.product.count(),
     prisma.category.count(),
     prisma.user.count({ where: { role: "USER" } }),
-    prisma.order.aggregate({ _sum: { total: true }, where: { status: "DELIVERED" } }),
+    prisma.order.aggregate({
+      _sum: { total: true, subtotal: true, deliveryCharge: true },
+      where: { status: "DELIVERED" },
+    }),
     prisma.settings.upsert({ where: { id: "store" }, update: {}, create: { id: "store" } }),
     prisma.order.findMany({
       orderBy: { createdAt: "desc" },
@@ -104,7 +107,18 @@ export default async function AdminOverviewPage() {
             </div>
             <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Revenue from delivered orders</p>
           </div>
-          <p className="mt-2 text-3xl font-extrabold text-fuchsia-600">{formatTaka(revenueAgg._sum.total ?? 0)}</p>
+          <p className="mt-2 text-3xl font-extrabold text-fuchsia-600">{formatTaka(revenueAgg._sum.subtotal ?? 0)}</p>
+
+          <div className="mt-4 space-y-1.5 border-t border-slate-100 pt-3 text-sm">
+            <div className="flex justify-between text-slate-500">
+              <span>Total delivery amount given</span>
+              <span className="font-semibold text-slate-700">{formatTaka(revenueAgg._sum.deliveryCharge ?? 0)}</span>
+            </div>
+            <div className="flex justify-between text-slate-500">
+              <span>Total earned (with delivery charge)</span>
+              <span className="font-semibold text-slate-700">{formatTaka(revenueAgg._sum.total ?? 0)}</span>
+            </div>
+          </div>
         </div>
 
         <div className="rounded-2xl bg-white p-5 ring-1 ring-slate-100">

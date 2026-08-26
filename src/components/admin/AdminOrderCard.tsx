@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import { formatTaka } from "@/lib/format";
 import { ZONE_LABELS, type Zone } from "@/lib/delivery";
@@ -54,6 +55,20 @@ export default function AdminOrderCard({ order }: { order: OrderData }) {
     router.refresh();
   }
 
+  async function handleDelete() {
+    if (!confirm("Delete this pending order? This cannot be undone and will restore product stock.")) return;
+    setUpdating(true);
+    const res = await fetch(`/api/orders/${order.id}`, { method: "DELETE" });
+    setUpdating(false);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      toast.error(data.error ?? "Could not delete order.");
+      return;
+    }
+    toast.success("Order deleted.");
+    router.refresh();
+  }
+
   return (
     <div className="rounded-2xl bg-white p-4 ring-1 ring-slate-100">
       <div className="flex flex-wrap items-start justify-between gap-2">
@@ -66,8 +81,10 @@ export default function AdminOrderCard({ order }: { order: OrderData }) {
         <div className="text-right">
           <p className="text-lg font-extrabold text-fuchsia-600">{formatTaka(order.total)}</p>
           <p className="text-[11px] font-semibold text-slate-400">Total amount</p>
-          <p className="mt-1 text-sm font-bold text-emerald-600">{formatTaka(order.total - order.deliveryCharge)}</p>
-          <p className="text-[11px] font-semibold text-slate-400">Due on delivery</p>
+          <p className="mt-1.5 text-sm font-bold text-slate-600">{formatTaka(order.total)}</p>
+          <p className="text-[11px] font-semibold text-slate-400">Due (before delivery charge)</p>
+          <p className="mt-1.5 text-sm font-bold text-emerald-600">{formatTaka(order.total - order.deliveryCharge)}</p>
+          <p className="text-[11px] font-semibold text-slate-400">Due (after delivery charge)</p>
         </div>
       </div>
 
@@ -122,6 +139,16 @@ export default function AdminOrderCard({ order }: { order: OrderData }) {
           <option value="GIVEN_TO_RIDER">Given to rider</option>
           <option value="DELIVERED">Delivered</option>
         </select>
+        {order.status === "PENDING" && (
+          <button
+            onClick={handleDelete}
+            disabled={updating}
+            className="ml-auto flex items-center gap-1.5 rounded-full border border-red-200 px-3 py-2 text-xs font-semibold text-red-500 transition hover:bg-red-50 disabled:opacity-60"
+          >
+            <Trash2 className="h-3.5 w-3.5" />
+            Delete
+          </button>
+        )}
       </div>
     </div>
   );
