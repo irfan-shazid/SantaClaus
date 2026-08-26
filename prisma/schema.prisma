@@ -152,9 +152,10 @@ model Order {
   zone           AddressZone
   deliveryCharge Int
 
-  accountType    AccountType @default(BKASH)
-  bkashNumber    String
-  transactionId  String
+  accountType        AccountType @default(BKASH)
+  bkashNumber        String
+  transactionId      String
+  deliveryChargePaid Boolean     @default(false)
 
   subtotal       Int
   total          Int

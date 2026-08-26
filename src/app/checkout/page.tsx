@@ -26,6 +26,7 @@ export default function CheckoutPage() {
   const [accountType, setAccountType] = useState<AccountType>("BKASH");
   const [bkashNumber, setBkashNumber] = useState("");
   const [transactionId, setTransactionId] = useState("");
+  const [deliveryChargePaid, setDeliveryChargePaid] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   // Pre-fill the name field once the session loads, without clobbering further edits.
@@ -69,6 +70,7 @@ export default function CheckoutPage() {
           accountType,
           bkashNumber,
           transactionId,
+          deliveryChargePaid,
           items: items.map((i) => ({ productId: i.productId, variant: i.variant, quantity: i.quantity })),
         }),
       });
@@ -220,10 +222,25 @@ export default function CheckoutPage() {
             />
           </div>
 
+          <label className="flex cursor-pointer items-start gap-3 rounded-2xl border border-slate-200 p-4 transition has-checked:border-fuchsia-500 has-checked:bg-fuchsia-50">
+            <input
+              type="checkbox"
+              checked={deliveryChargePaid}
+              onChange={(e) => setDeliveryChargePaid(e.target.checked)}
+              className="mt-0.5 h-5 w-5 shrink-0 accent-fuchsia-600"
+            />
+            <span className="text-sm font-semibold text-slate-700">
+              Given the delivery charge?
+              <span className="mt-0.5 block text-xs font-normal text-slate-500">
+                Confirm you&apos;ve sent {formatTaka(deliveryCharge)} to the number above before placing your order.
+              </span>
+            </span>
+          </label>
+
           <button
             type="submit"
-            disabled={submitting}
-            className="w-full rounded-full bg-fuchsia-600 py-3.5 text-sm font-bold text-white shadow-md transition active:scale-95 disabled:opacity-60"
+            disabled={submitting || !deliveryChargePaid}
+            className="w-full rounded-full bg-fuchsia-600 py-3.5 text-sm font-bold text-white shadow-md transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-60"
           >
             {submitting ? "Placing order…" : `Place order · ${formatTaka(total)}`}
           </button>
@@ -262,8 +279,13 @@ export default function CheckoutPage() {
             </div>
             <div className="flex justify-between border-t border-dashed border-slate-200 pt-1.5 text-fuchsia-700">
               <span className="font-semibold">Due on delivery</span>
-              <span className="font-bold">{formatTaka(total - deliveryCharge)}</span>
+              <span className="font-bold">{formatTaka(deliveryChargePaid ? total - deliveryCharge : total)}</span>
             </div>
+            {!deliveryChargePaid && (
+              <p className="text-right text-[11px] text-slate-400">
+                Confirm the delivery charge below to see the reduced due amount.
+              </p>
+            )}
           </div>
         </div>
       </div>

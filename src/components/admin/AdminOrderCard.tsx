@@ -24,6 +24,7 @@ interface OrderData {
   accountType: string;
   bkashNumber: string;
   transactionId: string;
+  deliveryChargePaid: boolean;
   subtotal: number;
   deliveryCharge: number;
   total: number;
@@ -82,6 +83,9 @@ export default function AdminOrderCard({ order }: { order: OrderData }) {
           <p className="text-slate-500">Account type: {ACCOUNT_TYPE_LABELS[order.accountType as AccountType]}</p>
           <p className="text-slate-500">Sender number: {order.bkashNumber}</p>
           <p className="text-slate-500">Transaction ID: {order.transactionId}</p>
+          <p className={order.deliveryChargePaid ? "font-semibold text-emerald-600" : "font-semibold text-amber-600"}>
+            {order.deliveryChargePaid ? "✓ Delivery charge confirmed by customer" : "Delivery charge not confirmed"}
+          </p>
         </div>
       </div>
 

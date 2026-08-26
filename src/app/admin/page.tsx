@@ -56,7 +56,7 @@ export default async function AdminOverviewPage() {
     { label: "Total orders", value: totalOrders, icon: ShoppingBag, accent: "bg-fuchsia-100 text-fuchsia-600" },
     { label: "Products", value: productCount, icon: Tags, accent: "bg-slate-100 text-slate-600" },
     { label: "Categories", value: categoryCount, icon: Tags, accent: "bg-slate-100 text-slate-600" },
-    { label: "Customers", value: customerCount, icon: Users, accent: "bg-slate-100 text-slate-600" },
+    { label: "Total users", value: customerCount, icon: Users, accent: "bg-slate-100 text-slate-600", href: "/admin/users" },
   ];
 
   return (
@@ -74,15 +74,26 @@ export default async function AdminOverviewPage() {
       </div>
 
       <div className="mt-3 grid grid-cols-2 gap-3 md:grid-cols-4">
-        {catalogCards.map((c) => (
-          <div key={c.label} className="rounded-2xl bg-white p-4 ring-1 ring-slate-100">
-            <div className={`mb-2 flex h-9 w-9 items-center justify-center rounded-full ${c.accent}`}>
-              <c.icon className="h-4.5 w-4.5" />
+        {catalogCards.map((c) => {
+          const content = (
+            <>
+              <div className={`mb-2 flex h-9 w-9 items-center justify-center rounded-full ${c.accent}`}>
+                <c.icon className="h-4.5 w-4.5" />
+              </div>
+              <p className="text-2xl font-extrabold text-slate-900">{c.value}</p>
+              <p className="text-xs font-semibold text-slate-500">{c.label}</p>
+            </>
+          );
+          return c.href ? (
+            <Link key={c.label} href={c.href} className="rounded-2xl bg-white p-4 ring-1 ring-slate-100 transition hover:shadow-sm">
+              {content}
+            </Link>
+          ) : (
+            <div key={c.label} className="rounded-2xl bg-white p-4 ring-1 ring-slate-100">
+              {content}
             </div>
-            <p className="text-2xl font-extrabold text-slate-900">{c.value}</p>
-            <p className="text-xs font-semibold text-slate-500">{c.label}</p>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       <div className="mt-4 grid gap-4 md:grid-cols-2">

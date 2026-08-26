@@ -77,6 +77,7 @@ export default async function OrderDetailPage({ params }: { params: Promise<{ id
           <Row label="Account type" value={ACCOUNT_TYPE_LABELS[order.accountType as AccountType]} />
           <Row label="bKash number" value={order.bkashNumber} />
           <Row label="Transaction ID" value={order.transactionId} />
+          <Row label="Delivery charge paid" value={order.deliveryChargePaid ? "Yes" : "No"} />
         </dl>
       </div>
     </div>

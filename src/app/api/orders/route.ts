@@ -13,6 +13,7 @@ const createOrderSchema = z.object({
   accountType: z.enum(["BKASH", "NAGAD", "ROCKET"]),
   bkashNumber: z.string().min(6).max(20),
   transactionId: z.string().min(3).max(40),
+  deliveryChargePaid: z.literal(true, "Please confirm you've sent the delivery charge before placing your order."),
   items: z
     .array(
       z.object({
@@ -114,6 +115,7 @@ export async function POST(req: Request) {
           accountType: data.accountType,
           bkashNumber: data.bkashNumber,
           transactionId: data.transactionId,
+          deliveryChargePaid: data.deliveryChargePaid,
           subtotal,
           total,
           items: { create: orderItemsData },
