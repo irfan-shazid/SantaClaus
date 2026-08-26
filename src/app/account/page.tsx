@@ -1,9 +1,11 @@
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Package, Clock, CheckCircle2 } from "lucide-react";
 import { getCurrentUser } from "@/lib/session";
 import { prisma } from "@/lib/prisma";
 import { formatTaka } from "@/lib/format";
-import { statusLabel } from "@/components/orders/StatusTimeline";
+import StatusTimeline, { statusLabel } from "@/components/orders/StatusTimeline";
 import LogoutButton from "@/components/account/LogoutButton";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +27,15 @@ export default async function AccountPage() {
     include: { items: true },
   });
 
+  const deliveredCount = orders.filter((o) => o.status === "DELIVERED").length;
+  const inProgressCount = orders.length - deliveredCount;
+
+  const stats = [
+    { label: "Total orders", value: orders.length, icon: Package, accent: "bg-fuchsia-100 text-fuchsia-600" },
+    { label: "In progress", value: inProgressCount, icon: Clock, accent: "bg-amber-100 text-amber-600" },
+    { label: "Delivered", value: deliveredCount, icon: CheckCircle2, accent: "bg-emerald-100 text-emerald-600" },
+  ];
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-6 md:px-8 md:py-10">
       <div className="mb-6 flex items-center justify-between">
@@ -33,6 +44,18 @@ export default async function AccountPage() {
           <p className="text-sm text-slate-500">{user.email}</p>
         </div>
         <LogoutButton />
+      </div>
+
+      <div className="mb-6 grid grid-cols-3 gap-3">
+        {stats.map((s) => (
+          <div key={s.label} className="rounded-2xl bg-white p-3 text-center ring-1 ring-slate-100 md:p-4">
+            <div className={`mx-auto mb-2 flex h-9 w-9 items-center justify-center rounded-full ${s.accent}`}>
+              <s.icon className="h-4.5 w-4.5" />
+            </div>
+            <p className="text-xl font-extrabold text-slate-900">{s.value}</p>
+            <p className="text-[11px] font-semibold text-slate-500 md:text-xs">{s.label}</p>
+          </div>
+        ))}
       </div>
 
       <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">My orders</h2>
@@ -50,17 +73,38 @@ export default async function AccountPage() {
             <li key={order.id}>
               <Link
                 href={`/account/orders/${order.id}`}
-                className="flex items-center justify-between rounded-2xl bg-white p-4 ring-1 ring-slate-100 transition hover:shadow-sm"
+                className="block rounded-2xl bg-white p-4 ring-1 ring-slate-100 transition hover:shadow-sm"
               >
-                <div>
-                  <p className="text-sm font-semibold text-slate-800">
-                    {order.items.length} item{order.items.length > 1 ? "s" : ""} · {formatTaka(order.total)}
-                  </p>
-                  <p className="text-xs text-slate-400">{new Date(order.createdAt).toLocaleDateString("en-BD", { day: "numeric", month: "short", year: "numeric" })}</p>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex -space-x-3">
+                      {order.items.slice(0, 3).map((item) => (
+                        <div
+                          key={item.id}
+                          className="relative h-11 w-11 shrink-0 overflow-hidden rounded-xl bg-slate-100 ring-2 ring-white"
+                        >
+                          {item.productImage && (
+                            <Image src={item.productImage} alt={item.productName} fill sizes="44px" className="object-cover" />
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-slate-800">
+                        {order.items.length} item{order.items.length > 1 ? "s" : ""} · {formatTaka(order.total)}
+                      </p>
+                      <p className="text-xs text-slate-400">
+                        {new Date(order.createdAt).toLocaleDateString("en-BD", { day: "numeric", month: "short", year: "numeric" })}
+                      </p>
+                    </div>
+                  </div>
+                  <span className={`shrink-0 rounded-full px-3 py-1 text-xs font-bold ${STATUS_COLOR[order.status]}`}>
+                    {statusLabel(order.status)}
+                  </span>
                 </div>
-                <span className={`rounded-full px-3 py-1 text-xs font-bold ${STATUS_COLOR[order.status]}`}>
-                  {statusLabel(order.status)}
-                </span>
+                <div className="mt-4 border-t border-slate-100 pt-4">
+                  <StatusTimeline status={order.status} />
+                </div>
               </Link>
             </li>
           ))}
