@@ -12,6 +12,8 @@ export default function Header() {
   const dispatch = useAppDispatch();
   const count = useAppSelector((s) => s.cart.items.reduce((n, i) => n + i.quantity, 0));
 
+  const accountHref = session ? (session.user.role === "ADMIN" ? "/admin" : "/account") : "/login";
+
   return (
     <header className="sticky top-0 z-40 h-14 border-b border-fuchsia-100/60 bg-white/60 backdrop-blur-md md:h-16">
       <div className="mx-auto flex h-full max-w-7xl items-center justify-between px-4 md:px-8">
@@ -43,7 +45,7 @@ export default function Header() {
             )}
           </button>
           <Link
-            href={session ? "/account" : "/login"}
+            href={accountHref}
             aria-label="Account"
             className="hidden rounded-full p-2 transition hover:bg-slate-100 active:scale-95 md:inline-flex"
           >

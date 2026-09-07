@@ -13,6 +13,9 @@ export default function MobileTabBar() {
   const dispatch = useAppDispatch();
   const count = useAppSelector((s) => s.cart.items.reduce((n, i) => n + i.quantity, 0));
 
+  const isAdmin = session?.user.role === "ADMIN";
+  const accountHref = session ? (isAdmin ? "/admin" : "/account") : "/login";
+
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
 
   const tabClass = (active: boolean) =>
@@ -39,9 +42,9 @@ export default function MobileTabBar() {
           </span>
         )}
       </button>
-      <Link href={session ? "/account" : "/login"} className={tabClass(isActive("/account"))}>
+      <Link href={accountHref} className={tabClass(isAdmin ? isActive("/admin") : isActive("/account"))}>
         <User className="h-5 w-5" />
-        Account
+        {isAdmin ? "Admin" : "Account"}
       </Link>
     </nav>
   );
