@@ -32,7 +32,14 @@ export default async function AdminProductsPage() {
               {p.images[0] && <Image src={p.images[0]} alt={p.name} fill sizes="48px" className="object-cover" />}
             </div>
             <div className="flex-1">
-              <p className="text-sm font-semibold text-slate-800">{p.name}</p>
+              <div className="flex items-center gap-1.5">
+                <p className="text-sm font-semibold text-slate-800">{p.name}</p>
+                {p.isUpcoming && (
+                  <span className="rounded-full bg-violet-100 px-2 py-0.5 text-[10px] font-bold text-violet-600">
+                    Upcoming
+                  </span>
+                )}
+              </div>
               <p className="text-xs text-slate-400">
                 {p.category.name} · {p.type === "CLOTHING" ? "Clothing" : "Toy"} · Stock {p.stock}
               </p>

@@ -18,6 +18,7 @@ const updateSchema = z.object({
   stock: z.number().int().min(0).optional(),
   type: z.enum(["CLOTHING", "TOY"]).optional(),
   featured: z.boolean().optional(),
+  isUpcoming: z.boolean().optional(),
   categoryId: z.string().min(1).optional(),
 });
 

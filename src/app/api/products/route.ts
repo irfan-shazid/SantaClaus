@@ -10,12 +10,16 @@ export async function GET(req: Request) {
   const type = searchParams.get("type");
   const q = searchParams.get("q");
   const featured = searchParams.get("featured");
+  const upcoming = searchParams.get("upcoming");
 
   const where: Prisma.ProductWhereInput = {};
   if (category) where.category = { slug: category };
   if (type === "CLOTHING" || type === "TOY") where.type = type;
   if (featured === "true") where.featured = true;
   if (q) where.name = { contains: q, mode: "insensitive" };
+  // Upcoming (not-yet-released) products are hidden from the regular catalog
+  // unless explicitly requested.
+  where.isUpcoming = upcoming === "true";
 
   const products = await prisma.product.findMany({
     where,
@@ -40,6 +44,7 @@ const createSchema = z.object({
   stock: z.number().int().min(0),
   type: z.enum(["CLOTHING", "TOY"]),
   featured: z.boolean().default(false),
+  isUpcoming: z.boolean().default(false),
   categoryId: z.string().min(1),
 });
 

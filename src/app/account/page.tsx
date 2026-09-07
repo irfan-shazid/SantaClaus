@@ -21,11 +21,18 @@ export default async function AccountPage() {
   const user = await getCurrentUser();
   if (!user) redirect("/login?redirect=/account");
 
-  const orders = await prisma.order.findMany({
-    where: { userId: user.id },
-    orderBy: { createdAt: "desc" },
-    include: { items: true },
-  });
+  const [orders, wishlist] = await Promise.all([
+    prisma.order.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      include: { items: true },
+    }),
+    prisma.wishlistItem.findMany({
+      where: { userId: user.id },
+      orderBy: { createdAt: "desc" },
+      include: { product: { select: { name: true, price: true, images: true, isUpcoming: true } } },
+    }),
+  ]);
 
   const deliveredCount = orders.filter((o) => o.status === "DELIVERED").length;
   const inProgressCount = orders.length - deliveredCount;
@@ -57,6 +64,32 @@ export default async function AccountPage() {
           </div>
         ))}
       </div>
+
+      {wishlist.length > 0 && (
+        <div className="mb-6">
+          <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">My wishlist</h2>
+          <div className="flex gap-3 overflow-x-auto pb-1" style={{ scrollbarWidth: "none" }}>
+            {wishlist.map((w) => (
+              <div key={w.id} className="w-28 shrink-0 overflow-hidden rounded-2xl bg-white ring-1 ring-slate-100">
+                <div className="relative aspect-square bg-slate-100">
+                  {w.product.images[0] && (
+                    <Image src={w.product.images[0]} alt={w.product.name} fill sizes="112px" className="object-cover" />
+                  )}
+                  {w.product.isUpcoming && (
+                    <span className="absolute left-1 top-1 rounded-full bg-violet-600/90 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                      Soon
+                    </span>
+                  )}
+                </div>
+                <div className="p-2">
+                  <p className="line-clamp-1 text-xs font-semibold text-slate-700">{w.product.name}</p>
+                  <p className="text-xs font-bold text-fuchsia-600">{formatTaka(w.product.price)}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       <h2 className="mb-3 text-sm font-bold uppercase tracking-wide text-slate-500">My orders</h2>
 

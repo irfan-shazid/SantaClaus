@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Clock, CheckCircle2, Truck, PackageCheck, ShoppingBag, Tags, Users, Wallet } from "lucide-react";
+import { Clock, CheckCircle2, Truck, PackageCheck, ShoppingBag, Tags, Users, Wallet, Heart } from "lucide-react";
 import { prisma } from "@/lib/prisma";
 import { formatTaka } from "@/lib/format";
 import { statusLabel } from "@/components/orders/StatusTimeline";
@@ -23,6 +23,7 @@ export default async function AdminOverviewPage() {
     productCount,
     categoryCount,
     customerCount,
+    wishlistCount,
     revenueAgg,
     settings,
     recentOrders,
@@ -34,6 +35,7 @@ export default async function AdminOverviewPage() {
     prisma.product.count(),
     prisma.category.count(),
     prisma.user.count({ where: { role: "USER" } }),
+    prisma.wishlistItem.count(),
     prisma.order.aggregate({
       _sum: { total: true, subtotal: true, deliveryCharge: true },
       where: { status: "DELIVERED" },
@@ -60,6 +62,7 @@ export default async function AdminOverviewPage() {
     { label: "Products", value: productCount, icon: Tags, accent: "bg-slate-100 text-slate-600" },
     { label: "Categories", value: categoryCount, icon: Tags, accent: "bg-slate-100 text-slate-600" },
     { label: "Total users", value: customerCount, icon: Users, accent: "bg-slate-100 text-slate-600", href: "/admin/users" },
+    { label: "Wishlist saves", value: wishlistCount, icon: Heart, accent: "bg-fuchsia-100 text-fuchsia-600", href: "/admin/wishlist" },
   ];
 
   return (

@@ -13,7 +13,8 @@ export default async function ShopPage({
 }) {
   const params = await searchParams;
 
-  const where: Prisma.ProductWhereInput = {};
+  // Upcoming products aren't for sale yet - keep them off the regular browse/search listing.
+  const where: Prisma.ProductWhereInput = { isUpcoming: false };
   if (params.category) where.category = { slug: params.category };
   if (params.type === "CLOTHING" || params.type === "TOY") where.type = params.type;
   if (params.q) where.name = { contains: params.q, mode: "insensitive" };

@@ -22,6 +22,7 @@ interface Product {
   stock: number;
   type: "CLOTHING" | "TOY";
   featured: boolean;
+  isUpcoming: boolean;
   categoryId: string;
 }
 
@@ -44,6 +45,7 @@ export default function ProductForm({ categories, existing }: { categories: Cate
   const [stock, setStock] = useState(existing?.stock?.toString() ?? "0");
   const [type, setType] = useState<"CLOTHING" | "TOY">(existing?.type ?? "CLOTHING");
   const [featured, setFeatured] = useState(existing?.featured ?? false);
+  const [isUpcoming, setIsUpcoming] = useState(existing?.isUpcoming ?? false);
   const [categoryId, setCategoryId] = useState(existing?.categoryId ?? categories[0]?.id ?? "");
   const [saving, setSaving] = useState(false);
 
@@ -74,6 +76,7 @@ export default function ProductForm({ categories, existing }: { categories: Cate
       stock: Number(stock),
       type,
       featured,
+      isUpcoming,
       categoryId,
     };
     const res = await fetch(existing ? `/api/products/${existing.id}` : "/api/products", {
@@ -210,6 +213,11 @@ export default function ProductForm({ categories, existing }: { categories: Cate
       <label className="flex items-center gap-2 text-sm font-medium text-slate-600">
         <input type="checkbox" checked={featured} onChange={(e) => setFeatured(e.target.checked)} />
         Show in featured picks on homepage
+      </label>
+
+      <label className="flex items-center gap-2 text-sm font-medium text-slate-600">
+        <input type="checkbox" checked={isUpcoming} onChange={(e) => setIsUpcoming(e.target.checked)} />
+        Publish as an Upcoming product (hidden from shop; users can wishlist it)
       </label>
 
       <button

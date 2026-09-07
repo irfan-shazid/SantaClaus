@@ -27,9 +27,10 @@ model User {
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
 
-  sessions Session[]
-  accounts Account[]
-  orders   Order[]
+  sessions      Session[]
+  accounts      Account[]
+  orders        Order[]
+  wishlistItems WishlistItem[]
 
   @@map("user")
 }
@@ -111,15 +112,35 @@ model Product {
   stock       Int         @default(0)
   type        ProductType
   featured    Boolean     @default(false)
+  // Published by admin as a preview of what's coming; hidden from the regular shop
+  // listing, users can add it to their wishlist instead of buying it.
+  isUpcoming  Boolean     @default(false)
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
   categoryId String
   category   Category    @relation(fields: [categoryId], references: [id], onDelete: Restrict)
   orderItems OrderItem[]
+  wishlistItems WishlistItem[]
 
   @@index([categoryId])
   @@map("product")
+}
+
+// ---------- Wishlist (for upcoming/not-yet-released products) ----------
+
+model WishlistItem {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, productId])
+  @@index([productId])
+  @@map("wishlist_item")
 }
 
 // ---------- Orders ----------
