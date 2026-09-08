@@ -195,9 +195,12 @@ model Order {
 }
 
 model OrderItem {
-  id           String  @id @default(cuid())
-  productId    String
-  product      Product @relation(fields: [productId], references: [id], onDelete: Restrict)
+  id String @id @default(cuid())
+  // Nullable with SetNull so a product can be deleted without destroying order
+  // history: the snapshot fields below keep the line item fully renderable on
+  // its own, and nothing reads the product relation for display.
+  productId    String?
+  product      Product? @relation(fields: [productId], references: [id], onDelete: SetNull)
   productName  String
   productImage String?
   variant      String?

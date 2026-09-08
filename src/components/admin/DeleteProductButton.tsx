@@ -11,7 +11,9 @@ export default function DeleteProductButton({ id }: { id: string }) {
     if (!confirm("Delete this product?")) return;
     const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
     if (!res.ok) {
-      toast.error("Could not delete product.");
+      // Surface the server's reason so the admin knows what to fix.
+      const data = await res.json().catch(() => null);
+      toast.error(typeof data?.error === "string" ? data.error : "Could not delete product.");
       return;
     }
     toast.success("Product deleted.");

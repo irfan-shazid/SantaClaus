@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 
@@ -45,8 +46,18 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const product = await prisma.product.update({ where: { id }, data: parsed.data });
-  return NextResponse.json(product);
+  try {
+    const product = await prisma.product.update({ where: { id }, data: parsed.data });
+    return NextResponse.json(product);
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2025") return NextResponse.json({ error: "This product no longer exists." }, { status: 404 });
+      if (e.code === "P2002") {
+        return NextResponse.json({ error: "Another product already uses this name/slug." }, { status: 409 });
+      }
+    }
+    throw e;
+  }
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {
@@ -55,6 +66,21 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
   const { id } = await params;
-  await prisma.product.delete({ where: { id } });
-  return NextResponse.json({ ok: true });
+
+  try {
+    await prisma.product.delete({ where: { id } });
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      // Already gone - treat as success so the list just refreshes.
+      if (e.code === "P2025") return NextResponse.json({ ok: true });
+      if (e.code === "P2003" || e.code === "P2014") {
+        return NextResponse.json(
+          { error: "This product is still linked to other records and can't be deleted." },
+          { status: 409 }
+        );
+      }
+    }
+    throw e;
+  }
 }

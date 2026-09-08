@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { getCurrentUser } from "@/lib/session";
 
@@ -28,8 +29,18 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     return NextResponse.json({ error: parsed.error.flatten() }, { status: 400 });
   }
 
-  const category = await prisma.category.update({ where: { id }, data: parsed.data });
-  return NextResponse.json(category);
+  try {
+    const category = await prisma.category.update({ where: { id }, data: parsed.data });
+    return NextResponse.json(category);
+  } catch (e) {
+    if (e instanceof Prisma.PrismaClientKnownRequestError) {
+      if (e.code === "P2025") return NextResponse.json({ error: "This category no longer exists." }, { status: 404 });
+      if (e.code === "P2002") {
+        return NextResponse.json({ error: "Another category already uses this name." }, { status: 409 });
+      }
+    }
+    throw e;
+  }
 }
 
 export async function DELETE(_req: Request, { params }: { params: Promise<{ id: string }> }) {

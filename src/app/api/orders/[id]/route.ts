@@ -32,9 +32,10 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   }
 
   await prisma.$transaction(async (tx) => {
-    // Restore stock that was reserved when the order was placed. updateMany is used
-    // instead of update so this doesn't throw if the product was since deleted.
+    // Restore stock that was reserved when the order was placed. Items whose product
+    // has since been deleted have a null productId and simply have nothing to restore.
     for (const item of order.items) {
+      if (!item.productId) continue;
       await tx.product.updateMany({
         where: { id: item.productId },
         data: { stock: { increment: item.quantity } },

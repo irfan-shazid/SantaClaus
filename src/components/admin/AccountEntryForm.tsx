@@ -50,8 +50,7 @@ export default function AccountEntryForm({
   }
 
   return (
-    // Name gets its own full-width row so it stays readable however narrow the column gets.
-    <form onSubmit={handleSubmit} className="rounded-xl bg-slate-50 p-3">
+    <form onSubmit={handleSubmit} className="grid gap-2 rounded-xl bg-slate-50 p-3 sm:grid-cols-[1fr_120px_150px_auto]">
       <input
         required
         maxLength={120}
@@ -60,33 +59,31 @@ export default function AccountEntryForm({
         placeholder={namePlaceholder}
         className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-fuchsia-400"
       />
-      <div className="mt-2 grid gap-2 sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
-        <input
-          required
-          type="number"
-          min={1}
-          step={1}
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="Amount"
-          className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-fuchsia-400"
-        />
-        <input
-          required
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-fuchsia-400"
-        />
-        <button
-          type="submit"
-          disabled={saving}
-          className="flex items-center justify-center gap-1.5 rounded-lg bg-fuchsia-600 px-4 py-2 text-sm font-bold text-white transition active:scale-95 disabled:opacity-60"
-        >
-          <Plus className="h-4 w-4" />
-          {saving ? "Adding…" : "Add"}
-        </button>
-      </div>
+      <input
+        required
+        type="number"
+        min={1}
+        step={1}
+        value={amount}
+        onChange={(e) => setAmount(e.target.value)}
+        placeholder="Amount"
+        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-fuchsia-400"
+      />
+      <input
+        required
+        type="date"
+        value={date}
+        onChange={(e) => setDate(e.target.value)}
+        className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-sm outline-none focus:border-fuchsia-400"
+      />
+      <button
+        type="submit"
+        disabled={saving}
+        className="flex items-center justify-center gap-1.5 rounded-lg bg-fuchsia-600 px-4 py-2 text-sm font-bold text-white transition active:scale-95 disabled:opacity-60"
+      >
+        <Plus className="h-4 w-4" />
+        {saving ? "Adding…" : "Add"}
+      </button>
     </form>
   );
 }
