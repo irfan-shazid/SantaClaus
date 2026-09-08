@@ -12,8 +12,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 md:px-8 md:py-10">
       <h1 className="mb-5 text-2xl font-extrabold text-slate-900">Admin dashboard</h1>
-      <AdminNav />
-      <div className="mt-6">{children}</div>
+      <div className="md:flex md:items-start md:gap-6">
+        <AdminNav />
+        {/* min-w-0 so wide tables/cards inside can scroll instead of stretching the flex row. */}
+        <div className="mt-6 min-w-0 flex-1 md:mt-0">{children}</div>
+      </div>
     </div>
   );
 }

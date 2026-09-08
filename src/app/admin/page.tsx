@@ -110,9 +110,6 @@ export default async function AdminOverviewPage() {
             </div>
             <p className="text-xs font-bold uppercase tracking-wide text-slate-500">Revenue from delivered orders</p>
           </div>
-          <Link href="/admin/accounts" className="text-xs font-semibold text-fuchsia-600 hover:underline">
-            Filter by date & see profit →
-          </Link>
           <p className="mt-2 text-3xl font-extrabold text-fuchsia-600">{formatTaka(revenueAgg._sum.subtotal ?? 0)}</p>
 
           <div className="mt-4 space-y-1.5 border-t border-slate-100 pt-3 text-sm">
@@ -125,6 +122,13 @@ export default async function AdminOverviewPage() {
               <span className="font-semibold text-slate-700">{formatTaka(revenueAgg._sum.total ?? 0)}</span>
             </div>
           </div>
+
+          <Link
+            href="/admin/accounts"
+            className="mt-3 inline-block text-xs font-semibold text-fuchsia-600 hover:underline"
+          >
+            Filter by date &amp; see profit →
+          </Link>
         </div>
 
         <div className="rounded-2xl bg-white p-5 ring-1 ring-slate-100">
