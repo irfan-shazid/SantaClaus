@@ -1,0 +1,50 @@
+# Santa Claus
+
+A mobile-first, 3D-animated e-commerce site for kids' clothing and toys, built with Next.js.
+
+## Stack
+
+- **Next.js 16** (App Router) + TypeScript + Tailwind CSS v4
+- **React Three Fiber / drei / three.js** — animated 3D home banner
+- **Framer Motion** — page and micro-interaction animations
+- **PostgreSQL (Neon)** + **Prisma** — database
+- **Better Auth** — Google login + email/password (no verification code)
+- **Cloudinary** — image uploads (file or URL)
+- **Redux Toolkit + redux-persist** — cart state
+- **Upstash Redis + @upstash/ratelimit** — rate limiting
+
+## Getting started
+
+```bash
+npm install
+cp .env.example .env         # then fill in the values — see SETUP.md
+npm run db:push              # push the Prisma schema to your database
+npm run db:seed              # optional: sample categories/products + admin login
+npm run dev
+```
+
+See [SETUP.md](./SETUP.md) for how to get each required API key (Neon, Google OAuth, Cloudinary,
+Upstash) and how this deploys to Vercel.
+
+## Key features
+
+- Mobile-first home page: the 3D banner and the dynamic category row both fit on screen together
+  on mobile, no scrolling needed to see either.
+- Shop with category/type filters, product detail pages with variants (size/color) and image
+  galleries.
+- Cart (Redux, persisted) + checkout that charges a delivery fee (৳80 inside Dhaka, ৳150 outside)
+  and collects the customer's phone, address, bKash sender number, and transaction ID as manual
+  payment proof — there is no online payment gateway.
+- User dashboard (`/account`) to track order status.
+- Admin dashboard (`/admin`) to manage categories (with logo + name), products (with images,
+  variants, stock), and move orders through Pending → Confirmed → Given to rider → Delivered.
+
+## Project structure
+
+```
+prisma/schema.prisma       Database schema
+src/lib/                   auth, prisma, cloudinary, rate-limit, session helpers
+src/store/                 Redux store (cart + ui slices)
+src/components/            UI components (three/, home/, shop/, cart/, admin/, account/, layout/)
+src/app/                   Routes (App Router)
+```

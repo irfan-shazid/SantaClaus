@@ -1,0 +1,37 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+
+const LINKS = [
+  { href: "/admin", label: "Overview" },
+  { href: "/admin/orders", label: "Orders" },
+  { href: "/admin/products", label: "Products" },
+  { href: "/admin/categories", label: "Categories" },
+  { href: "/admin/accounts", label: "Accounts" },
+  { href: "/admin/wishlist", label: "Wishlist" },
+  { href: "/admin/users", label: "Users" },
+];
+
+export default function AdminNav() {
+  const pathname = usePathname();
+
+  return (
+    <nav className="flex gap-2 overflow-x-auto border-b border-stone-200 pb-2" style={{ scrollbarWidth: "none" }}>
+      {LINKS.map((link) => {
+        const active = link.href === "/admin" ? pathname === "/admin" : pathname.startsWith(link.href);
+        return (
+          <Link
+            key={link.href}
+            href={link.href}
+            className={`shrink-0 rounded-full px-4 py-1.5 text-sm font-semibold transition ${
+              active ? "bg-santa-600 text-white" : "text-stone-600 hover:bg-stone-100"
+            }`}
+          >
+            {link.label}
+          </Link>
+        );
+      })}
+    </nav>
+  );
+}

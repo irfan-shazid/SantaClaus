@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+:root {
+  --background: #ffffff;
+  --foreground: #1c1917;
+}
+
+/* Santa red: a light, bright red. santa-600 is the primary brand colour and is
+   about as light as it can go while still carrying white button labels - white
+   on it is ~3.8:1, readable for the bold labels it's used with, but below AA
+   for small regular text. Anything lighter (e.g. #f87171) and white text on
+   buttons washes out. santa-700 (4.6:1) is for red text that must stay legible. */
+@theme {
+  --color-santa-50: #fff5f5;
+  --color-santa-100: #ffe4e4;
+  --color-santa-200: #fecaca;
+  --color-santa-300: #fca5a5;
+  --color-santa-400: #f87171;
+  --color-santa-500: #f25757;
+  --color-santa-600: #ef4444;
+  --color-santa-700: #d93636;
+  --color-santa-800: #b91c1c;
+  --color-santa-900: #991b1b;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-heading: var(--font-heading);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  position: relative;
+}
+
+/* A fixed, composited layer behind the content reproduces the same "gradient stays put
+   while the page scrolls" look as background-attachment: fixed, without the scroll jank
+   that property causes on mobile browsers (it forces main-thread repaints on every frame). */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  /* Flowing red-to-white silk: a vertical ramp with soft elliptical sweeps
+     layered over it to give the ribboned, translucent look.
+     The ramp lightens by roughly a third of the way down on purpose - this
+     layer is fixed while content scrolls across it, so each band has to stay
+     light enough for dark headings to clear AA contrast wherever they land. */
+  background-image:
+    radial-gradient(120% 44% at 88% 47%, rgba(255, 255, 255, 0.55) 0%, rgba(255, 255, 255, 0.12) 38%, rgba(255, 255, 255, 0) 62%),
+    radial-gradient(135% 38% at 2% 60%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 55%),
+    radial-gradient(100% 34% at 72% 30%, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0) 60%),
+    radial-gradient(95% 28% at 18% 4%, rgba(239, 68, 68, 0.3) 0%, rgba(239, 68, 68, 0) 62%),
+    linear-gradient(
+      180deg,
+      #ef4444 0%,
+      #f25c5c 4%,
+      #f79494 9%,
+      #fbc4c4 14%,
+      #fde4e4 22%,
+      #fff4f4 32%,
+      #ffffff 45%,
+      #ffffff 100%
+    );
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+}
+
+::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+@keyframes santa-peek {
+  0%,
+  58% {
+    transform: translateY(0) scale(1);
+  }
+  68% {
+    transform: translateY(65%) scale(0.75);
+  }
+  80% {
+    transform: translateY(-10%) scale(1.08);
+  }
+  90% {
+    transform: translateY(0) scale(1);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+  }
+}
+
+.animate-santa-peek {
+  animation: santa-peek 5s ease-in-out infinite;
+  transform-origin: bottom center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-santa-peek {
+    animation: none;
+  }
+}
